@@ -154,7 +154,7 @@ ALLPROG=$(TESTLIB)
 # Link
 ########################################################################
 
-all: $(ALLPROG) TestReadData
+all: $(ALLPROG) TestReadData TestPCG TestPVFGMRES
 
 Default:
 	regression
@@ -178,6 +178,16 @@ lib: $(OBJSC) $(OBJSF)
 TestReadData:
 	@$(CC) $(CFLAGS) -c example/TestReadData.c -o example/TestReadData.o
 	@$(FC) $(LOPT) example/TestReadData.o $(FLFLAGS) -o example/TestReadData.ex
+	@echo 'Building executable $@'
+
+TestPCG:
+	@$(CC) $(CFLAGS) -c example/TestPCG.c -o example/TestPCG.o
+	@$(FC) $(LOPT) example/TestPCG.o $(FLFLAGS) -o example/TestPCG.ex
+	@echo 'Building executable $@'
+
+TestPVFGMRES:
+	@$(CC) $(CFLAGS) -c example/TestPVFGMRES.c -o example/TestPVFGMRES.o
+	@$(FC) $(LOPT) example/TestPVFGMRES.o $(FLFLAGS) -o example/TestPVFGMRES.ex
 	@echo 'Building executable $@'
 
 

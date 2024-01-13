@@ -355,6 +355,34 @@ DBL faspxx_dvec_maxdiff(const dvector* x, const dvector* y)
 }
 
 /**
+ * \fn DBL faspxx_dvec_norm2diff (const dvector *x, const dvector *y)
+ *
+ * \brief L2-norm difference of two dvector x and y
+ *
+ * \param  x    Pointer to dvector
+ * \param  y    Pointer to dvector
+ *
+ * \return      L2-norm of x-y
+ *
+ * \author Li Zhao
+ * \date   01/13/2024
+ */
+DBL faspxx_dvec_norm2diff(const dvector* x, const dvector* y)
+{
+    const INT  length = x->row;
+    const DBL *xpt = x->val, *ypt = y->val;
+
+    INT i;
+    DBL L2 = 0.0;
+
+    for (i = 0; i < length; ++i) {
+        L2 += (xpt[i] - ypt[i]) * (xpt[i] - ypt[i]);
+    }
+
+    return L2;
+}
+
+/**
  * \fn void faspxx_dvec_symdiagscale (dvector *b, const dvector *diag)
  *
  * \brief Symmetric diagonal scaling D^{-1/2}b

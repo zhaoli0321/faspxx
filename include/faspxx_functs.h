@@ -100,9 +100,32 @@ void faspxx_dvec_cp(const dvector* x, dvector* y);
 
 DBL faspxx_dvec_maxdiff(const dvector* x, const dvector* y);
 
+DBL faspxx_dvec_norm2diff(const dvector* x, const dvector* y);
+
 void faspxx_dvec_symdiagscale(dvector* b, const dvector* diag);
 
 BOOL faspxx_dvec_isnan(const dvector* u);
+
+
+/*-------- In file: BlaArray.c --------*/
+
+void faspxx_blas_darray_ax(const INT n, const DBL a, DBL* x);
+
+void faspxx_blas_darray_axpy(const INT n, const DBL a, const DBL* x, DBL* y);
+
+void faspxx_blas_darray_axpyz(const INT n, const DBL a, const DBL* x, const DBL* y,
+                              DBL* z);
+
+void faspxx_blas_darray_axpby(const INT n, const DBL a, const DBL* x, const DBL b,
+                              DBL* y);
+
+DBL faspxx_blas_darray_norm1(const INT n, const DBL* x);
+
+DBL faspxx_blas_darray_norm2(const INT n, const DBL* x);
+
+DBL faspxx_blas_darray_norminf(const INT n, const DBL* x);
+
+DBL faspxx_blas_darray_dotprod(const INT n, const DBL* x, const DBL* y);
 
 
 /*-------- In file: BlaFormat.c --------*/
@@ -171,6 +194,99 @@ INT faspxx_dcsr_trans(const dCSRmat* A, dCSRmat* AT);
 void faspxx_dcsr_compress(const dCSRmat* A, dCSRmat* B, const DBL dtol);
 
 SHORT faspxx_dcsr_compress_inplace(dCSRmat* A, const DBL dtol);
+
+
+/*-------- In file: BlaSparseUtil.c --------*/
+
+void faspxx_sparse_abybms_(INT* ia, INT* ja, INT* ib, INT* jb, INT* nap, INT* map,
+                           INT* mbp, INT* ic, INT* jc);
+
+void faspxx_sparse_abyb_(INT* ia, INT* ja, DBL* a, INT* ib, INT* jb, DBL* b, INT* nap,
+                         INT* map, INT* mbp, INT* ic, INT* jc, DBL* c);
+
+void faspxx_sparse_iit_(INT* ia, INT* ja, INT* na, INT* ma, INT* iat, INT* jat);
+
+void faspxx_sparse_aat_(INT* ia, INT* ja, DBL* a, INT* na, INT* ma, INT* iat, INT* jat,
+                        DBL* at);
+
+void faspxx_sparse_aplbms_(INT* ia, INT* ja, INT* ib, INT* jb, INT* nab, INT* mab,
+                           INT* ic, INT* jc);
+
+void faspxx_sparse_aplusb_(INT* ia, INT* ja, DBL* a, INT* ib, INT* jb, DBL* b, INT* nab,
+                           INT* mab, INT* ic, INT* jc, DBL* c);
+
+void faspxx_sparse_rapms_(INT* ir, INT* jr, INT* ia, INT* ja, INT* ip, INT* jp,
+                          INT* nin, INT* ncin, INT* iac, INT* jac, INT* maxrout);
+
+void faspxx_sparse_wtams_(INT* jw, INT* ia, INT* ja, INT* nwp, INT* map, INT* jv,
+                          INT* nvp, INT* icp);
+
+void faspxx_sparse_wta_(INT* jw, DBL* w, INT* ia, INT* ja, DBL* a, INT* nwp, INT* map,
+                        INT* jv, DBL* v, INT* nvp);
+
+void faspxx_sparse_ytxbig_(INT* jy, DBL* y, INT* nyp, DBL* x, DBL* s);
+
+void faspxx_sparse_ytx_(INT* jy, DBL* y, INT* jx, DBL* x, INT* nyp, INT* nxp, INT* icp,
+                        DBL* s);
+
+void faspxx_sparse_rapcmp_(INT* ir, INT* jr, DBL* r, INT* ia, INT* ja, DBL* a, INT* ipt,
+                           INT* jpt, DBL* pt, INT* nin, INT* ncin, INT* iac, INT* jac,
+                           DBL* ac, INT* idummy);
+
+ivector faspxx_sparse_mis(dCSRmat* A);
+
+
+/*-------- In file: BlaSpmvCSR.c --------*/
+
+SHORT faspxx_blas_dcsr_add(const dCSRmat* A, const DBL alpha, const dCSRmat* B,
+                           const DBL beta, dCSRmat* C);
+
+void faspxx_blas_dcsr_axm(dCSRmat* A, const DBL alpha);
+
+void faspxx_blas_dcsr_mxv(const dCSRmat* A, const DBL* x, DBL* y);
+
+void faspxx_blas_dcsr_mxv_agg(const dCSRmat* A, const DBL* x, DBL* y);
+
+void faspxx_blas_dcsr_aAxpy(const DBL alpha, const dCSRmat* A, const DBL* x, DBL* y);
+
+void faspxx_blas_dcsr_aAxpy_agg(const DBL alpha, const dCSRmat* A, const DBL* x, DBL* y);
+
+DBL faspxx_blas_dcsr_vmv(const dCSRmat* A, const DBL* x, const DBL* y);
+
+void faspxx_blas_dcsr_mxm(const dCSRmat* A, const dCSRmat* B, dCSRmat* C);
+
+void faspxx_blas_dcsr_rap(const dCSRmat* R, const dCSRmat* A, const dCSRmat* P,
+                          dCSRmat* RAP);
+
+void faspxx_blas_dcsr_rap_agg(const dCSRmat* R, const dCSRmat* A, const dCSRmat* P,
+                              dCSRmat* RAP);
+
+void faspxx_blas_dcsr_rap_agg1(const dCSRmat* R, const dCSRmat* A, const dCSRmat* P,
+                               dCSRmat* B);
+
+void faspxx_blas_dcsr_ptap(const dCSRmat* Pt, const dCSRmat* A, const dCSRmat* P,
+                           dCSRmat* Ac);
+
+dCSRmat faspxx_blas_dcsr_rap2(INT* ir, INT* jr, DBL* r, INT* ia, INT* ja, DBL* a,
+                              INT* ipt, INT* jpt, DBL* pt, INT n, INT nc, INT* maxrpout,
+                              INT* ipin, INT* jpin);
+
+void faspxx_blas_dcsr_rap4(dCSRmat* R, dCSRmat* A, dCSRmat* P, dCSRmat* B,
+                           INT* icor_ysk);
+
+
+/*-------- In file: KryPCG.c --------*/
+
+INT faspxx_solver_dcsr_pcg(dCSRmat* A, dvector* b, dvector* u, precond* pc,
+                           const DBL tol, const INT MaxIt, const SHORT StopType,
+                           const SHORT PrtLvl);
+
+
+/*-------- In file: KryPVFGMRES.c --------*/
+
+INT faspxx_solver_dcsr_pvfgmres(dCSRmat* A, dvector* b, dvector* x, precond* pc,
+                                const DBL tol, const INT MaxIt, const SHORT restart,
+                                const SHORT StopType, const SHORT PrtLvl);
 
  
 /* End of faspxx_functs.h */

@@ -10,7 +10,7 @@
  */
 
 #ifndef __FASPXX_HEADER__ /*-- allow multiple inclusions --*/
-#define __FASPXX_HEADER__ /**< indicate faspxx.hxx has been included before */
+#define __FASPXX_HEADER__ ///< indicate faspxx.hxx has been included before */
 
 #ifdef _MSC_VER /*-- Define inline attribute for MSVC --*/
 #define __inline__ __inline
@@ -26,7 +26,7 @@
  * \brief FASP++ version information
  */
 #define FASPXX_VERSION 0.1 ///< fasp++ version
-#define DEBUG_MODE 1       ///< debug mode
+#define DEBUG_MODE 0       ///< debug mode
 
 /*----------------------------------------------------------------------------*/
 /* Definition of logic type                                                   */
@@ -70,11 +70,13 @@ typedef long long    LONGLONG; ///< long long integer type
 /* Definition of constants for range, time units, and tolerance               */
 /*----------------------------------------------------------------------------*/
 #define SMALL_TOL 1e-14      ///< Small positive real for tolerance
+#define SMALL_TOL2 1e-40     ///< Small positive real for tolerance
 #define LARGE_DBL 1e+60      ///< Largest double number
 #define SMALL_DBL -1e+60     ///< Smallest double number
 #define CLOSE_ZERO 1e-20     ///< Tolerance for almost zero
 #define CLOCK_USE_SEC 5000   ///< Show clock time in seconds
 #define CLOCK_USE_MIN 200000 ///< Show clock time in minutes
+#define STRLEN 256           ///< Length of strings
 
 /*----------------------------------------------------------------------------*/
 /* Definition of constants for solvers and preconditioners                    */
@@ -84,6 +86,8 @@ typedef long long    LONGLONG; ///< long long integer type
 #define MAX_STAG_NUM 20     ///< Maximal number of stagnation checks
 #define PRT_STEP_NUM 20     ///< Print iteration info every N steps
 #define MAX_MG_LEVEL 20     ///< Maximal number of multigrid levels
+#define MAX_RESTART 20      ///< Maximal restarting number
+#define STAG_RATIO 1e-4     ///< Stagnation tolerance = tol*STAGRATIO
 
 /// Level of output
 enum Output {
@@ -91,7 +95,8 @@ enum Output {
     PRINT_MIN  = 2, ///< minimal output
     PRINT_SOME = 4, ///< some output
     PRINT_MORE = 6, ///< more output
-    PRINT_MAX  = 8  ///< maximal output
+    PRINT_MOST = 8, ///< maximal output
+    PRINT_ALL  = 10 ///< all output
 };
 
 /// Solver types avaiable.
@@ -113,6 +118,16 @@ enum SOLType {
     SOLVER_MUMPS    = 92, ///< Direct method from MUMPS
     SOLVER_SUPERLU  = 93, ///< Direct method from SUPERLU
     SOLVER_PARDISO  = 94  ///< Direct method from PARDISO
+};
+
+/// Definition of preconditioner type for iterative methods
+enum PCType {
+    PC_NULL    = 0, ///< with no preconditioner
+    PC_DIAG    = 1, ///< with diagonal preconditioner
+    PC_AMG     = 2, ///< with AMG preconditioner
+    PC_FMG     = 3, ///< with full AMG preconditioner
+    PC_ILU     = 4, ///< with ILU preconditioner
+    PC_SCHWARZ = 5  ///< with Schwarz preconditioner
 };
 
 /// Solver stop criteria.
@@ -221,7 +236,7 @@ enum FaspRetCode {
 //     //! pointers to diagonal entries in values, the size is m
 //     INT* diagPtr;
 
-// } dCSRxmat; /**< Sparse matrix of DBL type in CSR format */
+// } dCSRxmat; ///< Sparse matrix of DBL type in CSR format */
 
 /**
  * \struct dCSRmat
@@ -254,7 +269,7 @@ typedef struct dCSRmat {
     //! pointers to diagonal entries in values, the size is m
     INT* diagPtr;
 
-} dCSRmat; /**< Sparse matrix of DBL type in CSR format */
+} dCSRmat; ///< Sparse matrix of DBL type in CSR format */
 
 /**
  * \struct dCOOmat
@@ -285,7 +300,7 @@ typedef struct dCOOmat {
     //! nonzero entries of A
     DBL* val;
 
-} dCOOmat; /**< Sparse matrix of DBL type in COO format */
+} dCOOmat; ///< Sparse matrix of DBL type in COO format */
 
 /**
  * \struct dvector
@@ -314,6 +329,126 @@ typedef struct ivector {
     INT* val;
 
 } ivector; ///< Vector of INT type
+
+/**
+ * \struct precond
+ * \brief  Preconditioner data and action
+ *
+ * \note This is the preconditioner structure for preconditioned iterative methods.
+ */
+typedef struct {
+
+    //! data for preconditioner, void pointer
+    void* data;
+
+    //! action for preconditioner, void function pointer
+    void (*fct)(DBL*, DBL*, void*);
+
+} precond; ///< Vector of INT type
+
+/**
+ * \struct input_param
+ * \brief  Input parameters
+ *
+ * Input parameters, reading from disk file
+ */
+typedef struct {
+
+    // output flags
+    SHORT print_level; ///< print level
+    SHORT output_type; ///< type of output stream
+
+    // problem parameters
+    char inifile[STRLEN]; ///< ini file name
+    char workdir[STRLEN]; ///< working directory for data files
+    INT  problem_num;     ///< problem number to solve
+
+    // parameters for iterative solvers
+    SHORT solver_type;    ///< type of iterative solvers
+    SHORT precond_type;   ///< type of preconditioner for iterative solvers
+    SHORT stop_type;      ///< type of stopping criteria for iterative solvers
+    DBL   itsolver_tol;   ///< tolerance for iterative linear solver
+    INT   itsolver_maxit; ///< maximal number of iterations for iterative solvers
+    INT   restart;        ///< restart number used in GMRES
+
+    // parameters for ILU
+    SHORT ILU_type;    ///< ILU type for decomposition*/
+    INT   ILU_lfil;    ///< level of fill-in
+    DBL   ILU_droptol; ///< drop tolerance
+    DBL   ILU_relax;   ///< scaling factor: add the sum of dropped entries to diagonal
+    DBL   ILU_permtol; ///< permutation tolerance
+
+#if 0
+    // parameter for Schwarz
+    INT SWZ_mmsize;    ///< maximal block size
+    INT SWZ_maxlvl;    ///< maximal levels
+    INT SWZ_type;      ///< type of Schwarz method
+    INT SWZ_blksolver; ///< type of Schwarz block solver
+
+    // parameters for AMG
+    SHORT AMG_type;              ///< Type of AMG
+    SHORT AMG_levels;            ///< maximal number of levels
+    SHORT AMG_cycle_type;        ///< type of cycle
+    SHORT AMG_smoother;          ///< type of smoother
+    SHORT AMG_smooth_order;      ///< order for smoothers
+    DBL   AMG_relaxation;        ///< over-relaxation parameter for SOR
+    SHORT AMG_polynomial_degree; ///< degree of the polynomial smoother
+    SHORT AMG_presmooth_iter;    ///< number of presmoothing
+    SHORT AMG_postsmooth_iter;   ///< number of postsmoothing
+    DBL   AMG_tol;               ///< tolerance for AMG if used as preconditioner
+    INT   AMG_coarse_dof;        ///< max number of coarsest level DOF
+    INT   AMG_maxit;          ///< number of iterations for AMG used as preconditioner
+    SHORT AMG_ILU_levels;     ///< how many levels use ILU smoother
+    SHORT AMG_coarse_solver;  ///< coarse solver type
+    SHORT AMG_coarse_scaling; ///< switch of scaling of the coarse grid correction
+    SHORT AMG_amli_degree;    ///< degree of the polynomial used by AMLI cycle
+    SHORT
+    AMG_nl_amli_krylov_type; ///< type of Krylov method used by nonlinear AMLI cycle
+    INT AMG_SWZ_levels;      ///< number of levels use Schwarz smoother
+
+    // parameters for classical AMG
+    SHORT AMG_coarsening_type;      ///< coarsening type
+    SHORT AMG_aggregation_type;     ///< aggregation type
+    SHORT AMG_interpolation_type;   ///< interpolation type
+    DBL   AMG_strong_threshold;     ///< strong threshold for coarsening
+    DBL   AMG_truncation_threshold; ///< truncation factor for interpolation
+    DBL   AMG_max_row_sum;          ///< maximal row sum
+    INT   AMG_aggressive_level;     ///< number of levels use aggressive coarsening
+    INT   AMG_aggressive_path; ///< number of paths to determine strongly coupled C-set
+    INT   AMG_pair_number;     ///< number of pairs in matching algorithm
+    DBL   AMG_quality_bound;   ///< threshold for pair wise aggregation
+
+    //  parameters for smoothed aggregation AMG
+    DBL AMG_strong_coupled;   ///< strong coupled threshold for aggregate
+    INT AMG_max_aggregation;  ///< max size of each aggregate
+    DBL AMG_tentative_smooth; ///< relaxation factor for smoothing the tentative
+                              ///< prolongation
+    SHORT AMG_smooth_filter; ///< use filter for smoothing the tentative prolongation or
+                             ///< not
+    SHORT AMG_smooth_restriction; ///< smoothing the restriction or not
+#endif
+
+} input_param; ///< Input parameters
+
+/*---------------------------*/
+/*--- Parameter structures --*/
+/*---------------------------*/
+
+/**
+ * \struct ITS_param
+ * \brief  Parameters for iterative solvers
+ */
+typedef struct {
+
+    SHORT print_level;   ///< print level: 0--10
+    SHORT itsolver_type; ///< solver type
+    SHORT precond_type;  ///< preconditioner type
+    SHORT stop_type;     ///< stopping criteria type
+    INT   restart;       ///< number of steps for restarting: for GMRES etc
+    INT   maxit;         ///< max number of iterations
+    DBL   tol;           ///< convergence tolerance
+
+} ITS_param; ///< Parameters for iterative solvers
 
 #endif /* end if for __FASPXX_HEADER__ */
 

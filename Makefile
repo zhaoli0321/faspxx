@@ -1,13 +1,13 @@
 ########################################################################
-# Fast Auxiliary Space Preconditioners (FASP)
+# Fast Auxiliary Space Preconditioners (FASP++)
 # 
-# This is the Makefile for ASCPR test! 
+# This is the Makefile for FASP++ test! 
 #
 ########################################################################
 
 #==============================================================================#
 # User compilers                                                               #
-# FASP has been tested with many different compilers; see README for details.  #
+# FASP++ has been tested with many different compilers; see README for details.#
 #==============================================================================#
 CC  = icc 
 CPP = icpc 

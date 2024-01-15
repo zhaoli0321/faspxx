@@ -22,6 +22,19 @@
 #include <string.h>
 #include <time.h>
 
+#if WITH_MUMPS
+#include "dmumps_c.h"
+#endif
+
+#if WITH_PARDISO
+#include "mkl_pardiso.h"
+#include "mkl_types.h"
+#endif
+
+#if WITH_SUPERLU
+#include "slu_ddefs.h"
+#endif
+
 /**
  * \brief FASP++ version information
  */
@@ -158,6 +171,7 @@ enum FaspRetCode {
     ERROR_SOLVER_STAG     = -32, ///< Iterative solver stagnates
     ERROR_SOLVER_SOLSTAG  = -33, ///< Iterative solver's solution is too small
     ERROR_SOLVER_TOLSMALL = -34, ///< Iterative solver's tolerance is too small
+    ERROR_SOLVER_EXIT     = -38, ///< Solver does not quit successfully
     ERROR_SOLVER_MAXIT    = -39, ///< Maximal iteration number reached
     ERROR_AMG_INTERP_TYPE = -40, ///< Unknown AMG interpolation type
     ERROR_AMG_SMOOTH_TYPE = -41, ///< Unknown AMG smoother type
@@ -449,6 +463,85 @@ typedef struct {
     DBL   tol;           ///< convergence tolerance
 
 } ITS_param; ///< Parameters for iterative solvers
+
+/*-----------------------------------*/
+/*--- structures of direct solver ---*/
+/*-----------------------------------*/
+
+/**
+ * \struct Mumps_data
+ * \brief  Data for MUMPS interface
+ */
+typedef struct {
+
+#if WITH_MUMPS
+    //! solver instance for MUMPS
+    DMUMPS_STRUC_C id;
+#endif
+
+    //! work for MUMPS
+    INT job;
+
+} Mumps_data; /**< Data for MUMPS */
+
+/**
+ * \struct Pardiso_data
+ * \brief  Data for Intel MKL PARDISO interface
+ *
+ */
+typedef struct {
+
+    //! Internal solver memory pointer
+    void* pt[64];
+
+#if WITH_PARDISO
+    //! Pardiso control parameters
+    MKL_INT iparm[64];
+
+    //! Type of the matrix
+    MKL_INT mtype;
+
+    //! Maximum number of numerical factorizations
+    MKL_INT maxfct;
+
+    //! Indicate the actual matrix for the solution phase, 1 <= mnum <= maxfct
+    MKL_INT mnum;
+
+#endif
+
+} Pardiso_data; /**< Data for PARDISO */
+
+/**
+ * \struct SuperLU_data
+ * \brief  Data for SuperLU interface
+ */
+typedef struct {
+
+    //! Row permutations from partial pivoting
+    INT* perm_r;
+
+    //! Column permutation vector
+    INT* perm_c;
+
+    //! Return variable
+    INT info;
+
+#if WITH_SUPERLU
+    //! Matrices A, L, U, right-hand side B
+    SuperMatrix A, L, U, B;
+
+    //! The statistics variables, e.g., running time, flops, tiny pivots, iterative
+    //! refinement steps, memory
+    SuperLUStat_t stat;
+
+    //! Set the default input options
+    superlu_options_t options;
+
+    //! Convert A to SLU_NC format when necessary
+    trans_t trans;
+#endif
+
+} SuperLU_data; /**< Data for SuperLU */
 
 #endif /* end if for __FASPXX_HEADER__ */
 

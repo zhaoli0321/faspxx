@@ -76,6 +76,13 @@ void faspxx_get_start_end(const INT procid, const INT nprocs, const INT n, INT* 
                           INT* end);
 
 
+/*-------- In file: AuxTiming.c --------*/
+
+void faspxx_gettime(DBL* time);
+
+void faspxx_gettime(DBL* time);
+
+
 /*-------- In file: AuxVector.c --------*/
 
 dvector faspxx_dvec_create(const INT m);
@@ -287,6 +294,58 @@ INT faspxx_solver_dcsr_pcg(dCSRmat* A, dvector* b, dvector* u, precond* pc,
 INT faspxx_solver_dcsr_pvfgmres(dCSRmat* A, dvector* b, dvector* x, precond* pc,
                                 const DBL tol, const INT MaxIt, const SHORT restart,
                                 const SHORT StopType, const SHORT PrtLvl);
+
+
+/*-------- In file: XtrMumps.c --------*/
+
+INT faspxx_solver_mumps(dCSRmat* ptrA, dvector* b, dvector* u, const SHORT prtlvl);
+
+INT faspxx_solver_mumps_steps(dCSRmat* ptrA, dvector* b, dvector* u, Mumps_data* mumps);
+
+Mumps_data faspxx_mumps_factorize(dCSRmat* ptrA, dvector* b, dvector* u,
+                                  const SHORT prtlvl);
+
+INT faspxx_mumps_solve(dCSRmat* ptrA, dvector* b, dvector* u, Mumps_data mumps,
+                       const SHORT prtlvl);
+
+INT faspxx_mumps_free(Mumps_data* mumps);
+
+
+/*-------- In file: XtrPardiso.c --------*/
+
+INT faspxx_solver_pardiso(dCSRmat* ptrA, dvector* b, dvector* u, const SHORT prtlvl);
+
+INT faspxx_pardiso_factorize(dCSRmat* ptrA, Pardiso_data* pdata, const SHORT prtlvl);
+
+INT faspxx_pardiso_solve(dCSRmat* ptrA, dvector* b, dvector* u, Pardiso_data* pdata,
+                         const SHORT prtlvl);
+
+INT faspxx_pardiso_free(Pardiso_data* pdata);
+
+
+/*-------- In file: XtrSuperlu.c --------*/
+
+INT faspxx_solver_superlu(dCSRmat* ptrA, dvector* b, dvector* u, const SHORT prtlvl);
+
+INT faspxx_superlu_factorize(dCSRmat* ptrA, dvector* b, SuperLU_data* superlu_data,
+                             const SHORT prtlvl);
+
+INT faspxx_superlu_solve(dCSRmat* ptrA, dvector* b, dvector* u,
+                         SuperLU_data* superlu_data, const SHORT prtlvl);
+
+INT faspxx_superlu_free(SuperLU_data* superlu_data);
+
+
+/*-------- In file: XtrUmfpack.c --------*/
+
+INT faspxx_solver_umfpack(dCSRmat* ptrA, dvector* b, dvector* u, const SHORT prtlvl);
+
+void* faspxx_umfpack_factorize(dCSRmat* ptrA, const SHORT prtlvl);
+
+INT faspxx_umfpack_solve(dCSRmat* ptrA, dvector* b, dvector* u, void* Numeric,
+                         const SHORT prtlvl);
+
+INT faspxx_umfpack_free(void* Numeric);
 
  
 /* End of faspxx_functs.h */

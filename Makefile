@@ -45,28 +45,35 @@ MKL_INC = -I $(MKL_DIR)/include
 
 # (2) If you wish to use MUMPS as a direct solver, uncomment the following
 # MUMPS_DIR = [mumps_root_dir]
-# MUMPS_INC = -I$(MUMPS_DIR)/libseq -I$(MUMPS_DIR)/include
-# MUMPS_LIB = -L$(MUMPS_DIR)/lib -ldmumps -lmumps_common -lpord -L$(MUMPS_DIR)/libseq -lmpiseq -lblas
+MUMPS_DIR = /home/spring/zhaoli/faspTest/MUMPS_4.10.0.ifort
+MUMPS_INC = -I$(MUMPS_DIR)/libseq -I$(MUMPS_DIR)/include
+MUMPS_LIB = -L$(MUMPS_DIR)/lib -ldmumps -lmumps_common -lpord -L$(MUMPS_DIR)/libseq -lmpiseq -lblas
 
 
 # (3) If you wish to use SuperLU as a direct solver, uncomment the following
 # two lines and give the location of SuperLU head and lib:
-# SUPERLU_INC = -I/usr/include/SuperLU_4.0
-# SUPERLU_LIB = /usr/lib/libsuperlu_4.0.a
+SUPERLU_DIR = /home/spring/zhaoli/faspTest/superlu-install
+SUPERLU_INC = -I$(SUPERLU_DIR)/include
+SUPERLU_LIB = -L$(SUPERLU_DIR)/lib -lsuperlu
 
 
 # (4) If you want to use UMFPACK as a direct solver, uncomment the following
 # three lines as well as the BLASLIB
 # UMFPACK_DIR=/dir/to/UMFPACK
-# UMFPACK_INC=-I$(UMFPACK_DIR)/Include -I$(UMFPACK_DIR)/../AMD/Include -I$(UMFPACK_DIR)/../UFconfig 
-# UMFPACK_LIB=-L$(UMFPACK_DIR)/../lib -lsuitesparseconfig -lumfpack -lamd -lcholmod -lcolamd -lcamd -lccolamd -L/opt/local/lib -lmetis
+UMFPACK_DIR=/home/spring/zhaoli/faspTest/SuiteSparse
+UMFPACK_INC=-I$(UMFPACK_DIR)/include -I$(UMFPACK_DIR)/AMD/Include -I$(UMFPACK_DIR)/UMFPACK/Include 
+UMFPACK_LIB=-L$(UMFPACK_DIR)/lib -lsuitesparseconfig -lumfpack -lamd -lcholmod -lcolamd -lcamd -lccolamd -L/opt/local/lib -lmetis
 
 
 #==============================================================================#
 # User preprocessing definitions                                               #
+# for example, using PARDISO, set -DWITH_PARDISO=1, otherwise -DWITH_PARDISO=0 #
+# for example, using MUMPS,   set -DWITH_MUMPS  =1, otherwise -DWITH_MUMPS  =0 #
+# for example, using SUPERLU, set -DWITH_SUPERLU=1, otherwise -DWITH_SUPERLU=0 #
+# for example, using UMFPACK, set -DWITH_UMFPACK=1, otherwise -DWITH_UMFPACK=0 #
 #==============================================================================#
 CDEFS=
-CDEFS+=-DWITH_PARDISO=1 -DWITH_MUMPS=0 -DWith_SuperLU=0 -DWith_UMFPACK=0 
+CDEFS+=-DWITH_PARDISO=1 -DWITH_MUMPS=1 -DWITH_SUPERLU=1 -DWITH_UMFPACK=1 
 
 COPTS=$(BOPT)
 CINCLUDES=$(INCLUDE)
@@ -154,7 +161,7 @@ ALLPROG=$(TESTLIB)
 # Link
 ########################################################################
 
-all: $(ALLPROG) TestReadData TestPCG TestPVFGMRES
+all: $(ALLPROG) TestReadData TestPCG TestPVFGMRES TestDirectSolver
 
 Default:
 	regression
@@ -190,6 +197,10 @@ TestPVFGMRES:
 	@$(FC) $(LOPT) example/TestPVFGMRES.o $(FLFLAGS) -o example/TestPVFGMRES.ex
 	@echo 'Building executable $@'
 
+TestDirectSolver:
+	@$(CC) $(CFLAGS) -c example/TestDirectSolver.c -o example/TestDirectSolver.o
+	@$(FC) $(LOPT) example/TestDirectSolver.o $(FLFLAGS) -o example/TestDirectSolver.ex
+	@echo 'Building executable $@'
 
 ########################################################################
 # Clean up

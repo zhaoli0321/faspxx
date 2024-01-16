@@ -323,6 +323,18 @@ INT faspxx_pardiso_solve(dCSRmat* ptrA, dvector* b, dvector* u, Pardiso_data* pd
 INT faspxx_pardiso_free(Pardiso_data* pdata);
 
 
+/*-------- In file: XtrSuiteSparse.c --------*/
+
+INT faspxx_solver_suitesparse(dCSRmat* ptrA, dvector* b, dvector* u, const SHORT prtlvl);
+
+void* faspxx_suitesparse_factorize(dCSRmat* ptrA, const SHORT prtlvl);
+
+INT faspxx_suitesparse_solve(dCSRmat* ptrA, dvector* b, dvector* u, void* Numeric,
+                             const SHORT prtlvl);
+
+INT faspxx_suitesparse_free(void* Numeric);
+
+
 /*-------- In file: XtrSuperlu.c --------*/
 
 INT faspxx_solver_superlu(dCSRmat* ptrA, dvector* b, dvector* u, const SHORT prtlvl);
@@ -334,18 +346,6 @@ INT faspxx_superlu_solve(dCSRmat* ptrA, dvector* b, dvector* u,
                          SuperLU_data* superlu_data, const SHORT prtlvl);
 
 INT faspxx_superlu_free(SuperLU_data* superlu_data);
-
-
-/*-------- In file: XtrUmfpack.c --------*/
-
-INT faspxx_solver_umfpack(dCSRmat* ptrA, dvector* b, dvector* u, const SHORT prtlvl);
-
-void* faspxx_umfpack_factorize(dCSRmat* ptrA, const SHORT prtlvl);
-
-INT faspxx_umfpack_solve(dCSRmat* ptrA, dvector* b, dvector* u, void* Numeric,
-                         const SHORT prtlvl);
-
-INT faspxx_umfpack_free(void* Numeric);
 
  
 /* End of faspxx_functs.h */

@@ -14,7 +14,7 @@ int main()
     DBL     CheckTOL = 1e-10;
     INT     status;
 
-    printf("Direct Solver (Pardiso, Mumps, SuperLU, Umfpack) Test...\n");
+    printf("Direct Solver (Pardiso, Mumps, SuperLU, SuiteSparse) Test...\n");
 #if FACTSOLCOMB
     printf("Factorization and solution are combined together!\n\n");
 #else
@@ -112,8 +112,8 @@ int main()
     if (errL2 < CheckTOL && residual_norm2 < CheckTOL) printf("SuperLU Pass!\n");
 #endif
 
-#if WITH_UMFPACK // use UMFPACK directly
-    printf("\nUMFPACK Test...\n");
+#if WITH_SUITESPARSE // use SuiteSparse (or UMFpack) directly
+    printf("\nSuiteSparse Test...\n");
     dCSRmat A_tran;
     faspxx_dcsr_trans(&A, &A_tran);
     faspxx_dcsr_sort(&A_tran);
@@ -121,11 +121,11 @@ int main()
     faspxx_dcsr_free(&A_tran);
 
 #if FACTSOLCOMB
-    status = faspxx_solver_umfpack(&A, &b, &x, PrtLvl);
+    status = faspxx_solver_suitesparse(&A, &b, &x, PrtLvl);
 #else
-    void* Numeric = faspxx_umfpack_factorize(&A, PrtLvl);              // factorize
-    status        = faspxx_umfpack_solve(&A, &b, &x, Numeric, PrtLvl); // solve
-    status        = faspxx_umfpack_free(Numeric);                      // free
+    void* Numeric = faspxx_suitesparse_factorize(&A, PrtLvl);              // factorize
+    status        = faspxx_suitesparse_solve(&A, &b, &x, Numeric, PrtLvl); // solve
+    status        = faspxx_suitesparse_free(Numeric);                      // free
 #endif
 
     //! Checking
@@ -138,7 +138,7 @@ int main()
     residual_norm2 = faspxx_blas_darray_norm2(r.row, r.val);
     printf("||x-u|| = %e, ||b-Ax|| = %e\n", errL2, residual_norm2);
 
-    if (errL2 < CheckTOL && residual_norm2 < CheckTOL) printf("UMFPACK Pass!\n");
+    if (errL2 < CheckTOL && residual_norm2 < CheckTOL) printf("SuiteSparse Pass!\n");
 #endif
 
     faspxx_dcsr_free(&A);

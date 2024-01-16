@@ -7,7 +7,7 @@
 
 #==============================================================================#
 # User compilers                                                               #
-# FASP++ has been tested with many different compilers; see README for details.#
+# FASP++ has been tested with many different compilers                         #
 #==============================================================================#
 CC  = icc 
 CPP = icpc 
@@ -26,7 +26,7 @@ BOPT=-O2
 # BOPT+=-fopenmp
 
 ########################################################################
-# Root directory for FASPSOLVER package
+# Root directory for FASPXX package
 ########################################################################
 FASPXXDIR = ../faspxx
 INCLUDE = -I$(FASPXXDIR)/include -I./src 
@@ -39,45 +39,41 @@ FASXXPLIB = $(FASPXXDIR)/lib/libfaspxx.a
 # We recommend using Pardiso.
 # (1) If you wish to use Pardiso as a direct solver, uncomment the following
 MKL_DIR = /opt/intel/mkl
-MKL_LIB = -L $(MKL_DIR)/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
 MKL_INC = -I $(MKL_DIR)/include
+MKL_LIB = -L $(MKL_DIR)/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
 
 
 # (2) If you wish to use MUMPS as a direct solver, uncomment the following
-# MUMPS_DIR = [mumps_root_dir]
-MUMPS_DIR = /home/spring/zhaoli/faspTest/MUMPS_4.10.0.ifort
-MUMPS_INC = -I$(MUMPS_DIR)/libseq -I$(MUMPS_DIR)/include
-MUMPS_LIB = -L$(MUMPS_DIR)/lib -ldmumps -lmumps_common -lpord -L$(MUMPS_DIR)/libseq -lmpiseq -lblas
+# MUMPS_DIR = /home/spring/zhaoli/faspTest/MUMPS_4.10.0.ifort # The root directory of [MUMPS_DIR] is specified by the user
+# MUMPS_INC = -I$(MUMPS_DIR)/libseq -I$(MUMPS_DIR)/include
+# MUMPS_LIB = -L$(MUMPS_DIR)/lib -ldmumps -lmumps_common -lpord -L$(MUMPS_DIR)/libseq -lmpiseq -lblas
 
 
 # (3) If you wish to use SuperLU as a direct solver, uncomment the following
-# two lines and give the location of SuperLU head and lib:
-SUPERLU_DIR = /home/spring/zhaoli/faspTest/superlu-install
-SUPERLU_INC = -I$(SUPERLU_DIR)/include
-SUPERLU_LIB = -L$(SUPERLU_DIR)/lib -lsuperlu
+# SUPERLU_DIR = /home/spring/zhaoli/faspTest/superlu-install # The root directory of [SUPERLU_DIR] is specified by the user
+# SUPERLU_INC = -I$(SUPERLU_DIR)/include
+# SUPERLU_LIB = -L$(SUPERLU_DIR)/lib -lsuperlu
 
 
-# (4) If you want to use UMFPACK as a direct solver, uncomment the following
-# three lines as well as the BLASLIB
-# UMFPACK_DIR=/dir/to/UMFPACK
-UMFPACK_DIR=/home/spring/zhaoli/faspTest/SuiteSparse
-UMFPACK_INC=-I$(UMFPACK_DIR)/include -I$(UMFPACK_DIR)/AMD/Include -I$(UMFPACK_DIR)/UMFPACK/Include 
-UMFPACK_LIB=-L$(UMFPACK_DIR)/lib -lsuitesparseconfig -lumfpack -lamd -lcholmod -lcolamd -lcamd -lccolamd -L/opt/local/lib -lmetis
+# (4) If you want to use SUITESPARSE (or UMFPACK) as a direct solver, uncomment the following
+# SUITESPARSE_DIR=/home/spring/zhaoli/faspTest/SuiteSparse # The root directory of [SUITESPARSE_DIR] is specified by the user
+# SUITESPARSE_INC=-I$(SUITESPARSE_DIR)/include -I$(SUITESPARSE_DIR)/AMD/Include -I$(SUITESPARSE_DIR)/UMFPACK/Include 
+# SUITESPARSE_LIB=-L$(SUITESPARSE_DIR)/lib -lsuitesparseconfig -lumfpack -lamd -lcholmod -lcolamd -lcamd -lccolamd -L/opt/local/lib -lmetis
 
 
 #==============================================================================#
 # User preprocessing definitions                                               #
-# for example, using PARDISO, set -DWITH_PARDISO=1, otherwise -DWITH_PARDISO=0 #
-# for example, using MUMPS,   set -DWITH_MUMPS  =1, otherwise -DWITH_MUMPS  =0 #
-# for example, using SUPERLU, set -DWITH_SUPERLU=1, otherwise -DWITH_SUPERLU=0 #
-# for example, using UMFPACK, set -DWITH_UMFPACK=1, otherwise -DWITH_UMFPACK=0 #
+# e.g., using PARDISO, set -DWITH_PARDISO=1, otherwise -DWITH_PARDISO    =0    #
+# e.g., using MUMPS,   set -DWITH_MUMPS  =1, otherwise -DWITH_MUMPS      =0    #
+# e.g., using SUPERLU, set -DWITH_SUPERLU=1, otherwise -DWITH_SUPERLU    =0    #
+# e.g., using UMFPACK, set -DWITH_UMFPACK=1, otherwise -DWITH_SUITESPARSE=0    #
 #==============================================================================#
 CDEFS=
-CDEFS+=-DWITH_PARDISO=1 -DWITH_MUMPS=1 -DWITH_SUPERLU=1 -DWITH_UMFPACK=1 
+CDEFS+=-DWITH_PARDISO=1 -DWITH_MUMPS=0 -DWITH_SUPERLU=0 -DWITH_SUITESPARSE=0 
 
 COPTS=$(BOPT)
 CINCLUDES=$(INCLUDE)
-CINCLUDES+=$(MKL_INC) $(MUMPS_INC) $(SUPERLU_INC) $(UMFPACK_INC) 
+CINCLUDES+=$(MKL_INC) $(MUMPS_INC) $(SUPERLU_INC) $(SUITESPARSE_INC) 
 CFLAGS=$(CDEFS) $(COPTS) $(CINCLUDES)
 
 FOPTS=$(BOPT)
@@ -91,7 +87,7 @@ FFLAGS=$(FDEFS) $(FOPTS) $(FINCLUDES)
 LINKOPTS=$(BOPT)
 
 LIBS=$(TESTLIB) $(FASPLIB)
-LIBS+=$(MKL_LIB) $(MUMPS_LIB) $(SUPERLU_LIB) $(UMFPACK_LIB)
+LIBS+=$(MKL_LIB) $(MUMPS_LIB) $(SUPERLU_LIB) $(SUITESPARSE_LIB)
 
 CLFLAGS=-lstdc++ $(LINKOPTS) $(LIBS)
 FLFLAGS=-lm $(LINKOPTS) $(LIBS)
